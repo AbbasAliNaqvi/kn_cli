@@ -10,9 +10,11 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native/new-app-screen": "0.82.0",
+    "hoist-non-react-statics": "^3.3.2",
     "react": "19.1.1",
     "react-native": "0.82.0",
-    "@react-native/new-app-screen": "0.82.0",
+    "react-native-paper": "^5.14.5",
     "react-native-safe-area-context": "^5.5.2"
   },
   "devDependencies": {
