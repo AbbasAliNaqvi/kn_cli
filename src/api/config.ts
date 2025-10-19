@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { apiFetch } from '../services/ApiClient';
+import { apiFetch } from '../../services/ApiClient';
 
 export const API_CONFIG = {
   // Development mode flag

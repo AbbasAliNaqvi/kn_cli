@@ -1,6 +1,6 @@
 
 import * as Sentry from '@sentry/react-native';
-import AuthService from '../api/authService';
+import AuthService from '../src/api/authService';
 
 // Simple in-memory cache for GET requests
 const apiCache = new Map();
