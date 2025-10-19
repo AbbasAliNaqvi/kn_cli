@@ -1,16 +1,18 @@
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 
 import { useAppSelector } from '../core/redux/store';
 import { selectIsAuthenticated, selectAccountType } from '../core/redux/slices/authSlice';
 import { useCheckOnboardingStatusQuery } from '../api/apiSlice';
 
-// --- Screen Imports ---
+// --- Real Screen Imports ---
 import LoginScreen from '../screens/auth/LoginScreen';
+import UserBottomTabs from './UserBottomTabs'; // ✅ NOW THE REAL COMPONENT
+import UploadRescueScreen from '../components/user/camera/UploadRescueScreen'; // For the modal stack
 
-// --- Placeholder Screens (to be replaced with your actual components) ---
+// --- Placeholder Screens (For features not yet built) ---
 const UserOnboardingScreen = () => (
   <View style={styles.container}>
     <Text style={styles.placeholderText}>User Onboarding Screen</Text>
@@ -23,15 +25,9 @@ const NGOOnboardingScreen = () => (
   </View>
 );
 
-const UserBottomTabs = () => (
-  <View style={styles.container}>
-    <Text style={styles.placeholderText}>User Main App (Bottom Tabs)</Text>
-  </View>
-);
-
 const NGOBottomTabs = () => (
   <View style={styles.container}>
-    <Text style={styles.placeholderText}>NGO Main App (Bottom Tabs)</Text>
+    <Text style={styles.placeholderText}>NGO Main App</Text>
   </View>
 );
 
@@ -44,12 +40,33 @@ const LoadingScreen = () => (
 
 const Stack = createStackNavigator();
 
+/**
+ * This nested stack contains the main user experience. It includes the
+ * bottom tabs and any full-screen modals that should appear over them,
+ * such as the camera upload screen.
+ */
+function UserAppStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainTabs" component={UserBottomTabs} />
+      <Stack.Screen 
+        name="UploadRescue" 
+        component={UploadRescueScreen}
+        options={{ 
+          // This makes the screen slide up from the bottom like a modal
+          cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
+          presentation: 'modal',
+        }}
+      />
+      {/* You can add other modal screens here, e.g., a full-screen notification viewer */}
+    </Stack.Navigator>
+  );
+}
+
 export default function AppNavigator() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const accountType = useAppSelector(selectAccountType);
 
-  // This RTK Query hook checks if the logged-in user needs onboarding.
-  // We skip this API call if the user is not authenticated.
   const { data: onboardingStatus, isLoading, isError } = useCheckOnboardingStatusQuery(undefined, {
     skip: !isAuthenticated,
   });
@@ -58,29 +75,28 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!isAuthenticated ? (
-          // **Auth Flow**: User is not logged in. Show the login screen.
+          // **Auth Flow**: User is not logged in.
           <Stack.Screen name="Auth" component={LoginScreen} />
         ) : isLoading ? (
-          // **Loading Flow**: User is logged in, but we are checking their onboarding status.
+          // **Loading Flow**: Checking user's onboarding status.
           <Stack.Screen name="Loading" component={LoadingScreen} />
         ) : isError ? (
-          // **Error Fallback**: If checking onboarding fails, kick user back to login.
+          // **Error Fallback**: If the API fails, send back to login.
           <Stack.Screen name="Auth" component={LoginScreen} />
         ) : onboardingStatus?.onboarding_required ? (
-          // **Onboarding Flow**: User is authenticated but needs to complete their profile.
-          // Show a different onboarding screen based on their account type.
+          // **Onboarding Flow**: User needs to complete their profile.
           onboardingStatus.account_type === 'ngo' ? (
             <Stack.Screen name="NGOOnboarding" component={NGOOnboardingScreen} />
           ) : (
             <Stack.Screen name="UserOnboarding" component={UserOnboardingScreen} />
           )
         ) : (
-          // **Main App Flow**: User is authenticated and fully onboarded.
-          // Show the correct main app interface based on their account type.
+          // **Main App Flow**: User is fully authenticated and onboarded.
           accountType === 'ngo' ? (
             <Stack.Screen name="NGOApp" component={NGOBottomTabs} />
           ) : (
-            <Stack.Screen name="UserApp" component={UserBottomTabs} />
+            // ✅ DIRECTS TO THE FULLY-FEATURED USER APP STACK
+            <Stack.Screen name="UserApp" component={UserAppStack} />
           )
         )}
       </Stack.Navigator>
