@@ -93,7 +93,7 @@ export default function UserHomeScreen() {
     (state: RootState) => state.persisted?.reports?.trackingReports || [],
   );
 
-  const [radius, setRadius] = useState('5 km');
+  const [radius, setRadius] = useState('1 km');
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -531,7 +531,6 @@ export default function UserHomeScreen() {
       <>
         {/* LeafletMap */}
 
-
         <LeafletMap
           userLocation={userLocation}
           rescueCases={filteredRescueCases}
@@ -540,7 +539,6 @@ export default function UserHomeScreen() {
         />
 
         {/* OlaMap */}
-
 
         {/*         
         <OlaMap
@@ -707,6 +705,7 @@ export default function UserHomeScreen() {
               }}
             />
           </View>
+
           {mapRefreshing ? (
             <View style={styles.mapLoadingContainer}>
               <ActivityIndicator size="small" color={theme.colors.primary} />
@@ -716,13 +715,13 @@ export default function UserHomeScreen() {
             renderMapSection()
           )}
 
-          {/* Radius Selection */}
-          <View style={styles.radiusContainer}>
-            <Text style={styles.radiusLabel}>🎯 Search Radius</Text>
+          {/* ✅ Radius Selection (Updated layout + styles) */}
+          <View style={styles.radiusRow}>
+            <Text style={styles.radiusLabel}>🎯 Search Radius:</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.radiusChipsContainer}
+              contentContainerStyle={styles.radiusChipsRow}
             >
               {radiusOptions.map(option => (
                 <Chip
@@ -889,12 +888,14 @@ export default function UserHomeScreen() {
   );
 }
 
+
+
 const styles = StyleSheet.create({
   // [All same styles as before]
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    paddingBottom: 50,
+    backgroundColor: '#ffffffff',
+    paddingBottom: 90,
     marginBottom: 30,
   },
   loadingContainer: {
@@ -903,6 +904,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
     padding: 20,
+  },
+    radiusChip: {
+    backgroundColor: '#f1f1f1',
+    marginHorizontal: 4,
+    borderRadius: 20,
+  },
+  selectedRadiusChip: {
+    backgroundColor: 'rgba(0, 123, 255, 0.15)', // light tint of primary
+  },
+  radiusChipText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  selectedRadiusChipText: {
+    fontWeight: '700',
+    color: '#007bff', // highlight text in theme primary
   },
   offlineText: {
     fontSize: 18,
@@ -923,11 +940,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   headerTextContainer: { flex: 1 },
-  greeting: { fontSize: 18, color: '#666', fontWeight: '400' },
+  greeting: { fontSize: 21, color: '#666', fontWeight: '400', fontFamily: 'cursive' },
   userName: {
     fontSize: 28,
     fontWeight: '600',
     fontStyle: 'italic',
+    fontFamily: 'serif',
     marginBottom: 8,
   },
   headerSubRow: { flexDirection: 'row', alignItems: 'center', marginTop: 1 },
@@ -959,11 +977,28 @@ const styles = StyleSheet.create({
     height: 280,
     backgroundColor: '#fff',
   },
-  mapSubtitle: { fontSize: 12, color: '#666', marginTop: 2 },
+    mapSection: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 10,
+    borderRadius: 16,
+    backgroundColor: '#fff',
+    elevation: 3,
+  },
+  mapHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  mapSubtitle: {
+    fontSize: 14,
+    color: '#666',
+  },
   miniCardsSection: {
     marginTop: 5,
     marginHorizontal: 14,
-    marginBottom: 10,
+    marginBottom: 1,
     borderRadius: 16,
     elevation: 1,
     paddingVertical: 12,
@@ -996,21 +1031,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
-  mapSection: {
-    marginTop: 8,
-    marginHorizontal: 16,
-    marginBottom: 5,
-    borderRadius: 16,
-    overflow: 'hidden',
-    elevation: 4,
-    backgroundColor: '#fff',
-  },
-  mapHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-  },
+ 
   mapLoadingContainer: {
     height: 250,
     justifyContent: 'center',
@@ -1023,18 +1044,29 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,0.1)',
   },
-  radiusLabel: { fontSize: 14, fontWeight: '600', marginBottom: 2 },
   radiusChipsContainer: { flexDirection: 'row', gap: 8, paddingVertical: 4 },
-  radiusChip: { backgroundColor: '#fff' },
-  selectedRadiusChip: { backgroundColor: '#6200ee' },
-  radiusChipText: { fontSize: 12 },
-  selectedRadiusChipText: { color: '#fff', fontWeight: '600' },
   notificationSection: {
     margin: 16,
     borderRadius: 16,
     elevation: 1,
     paddingVertical: 16,
     backgroundColor: '#fff',
+  },
+    radiusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    paddingHorizontal: 4,
+  },
+  radiusLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#333',
+    marginRight: 8,
+  },
+  radiusChipsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   notificationItem: {
     paddingHorizontal: 16,
